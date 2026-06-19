@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Billbaze Social Planner v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--navy2:#1A3050;--orange:#FF6B35;--orange2:#FF9558;
+  --fb:#1877F2;--fb-bg:#EBF3FF;
+  --ig:#C13584;--ig-bg:#FDF0F7;
+  --tt:#000000;--tt-bg:#EFEFEF;
+  --bg:#F2F4F8;--card:#fff;--border:#E2E8F2;
+  --text:#1A2340;--muted:#6B7A99;--radius:14px;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+header{background:var(--navy);padding:18px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:20;box-shadow:0 2px 16px rgba(0,0,0,0.3)}
+.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#FF6B35,#FF9A6C);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:19px;color:#fff;flex-shrink:0}
+.htxt h1{color:#fff;font-size:16px;font-weight:800;letter-spacing:-0.3px}
+.htxt p{color:#5A7AA8;font-size:11px;margin-top:2px}
+.badge{margin-left:auto;background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+
+/* KEY BAR */
+.keybar{background:#0F2038;padding:10px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid #1E3A5F}
+.keybar label{color:#7A99BB;font-size:12px;font-weight:600;white-space:nowrap}
+.keybar input{flex:1;min-width:180px;max-width:380px;background:#0A1628;border:1.5px solid #253A55;color:#fff;padding:8px 13px;border-radius:8px;font-size:13px;font-family:inherit;outline:none}
+.keybar input:focus{border-color:var(--orange)}
+.keybar small{color:#3A5570;font-size:11px}
+.keybar a{color:var(--orange);font-size:11px;text-decoration:none}
+
+/* LAYOUT */
+main{max-width:920px;margin:0 auto;padding:28px 18px 60px}
+.sec-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+
+/* PLATFORMS */
+.platforms{display:flex;gap:10px;margin-bottom:24px}
+.plat-btn{flex:1;padding:14px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:7px}
+.plat-btn:hover{transform:translateY(-1px);border-color:#bbb}
+.plat-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff}
+.plat-name{font-weight:700;font-size:13px}
+.plat-desc{font-size:10px;color:var(--muted);line-height:1.4}
+.p-fb{border-color:var(--fb)!important;background:var(--fb-bg)!important}.p-fb .plat-name{color:var(--fb)}
+.p-ig{border-color:var(--ig)!important;background:var(--ig-bg)!important}.p-ig .plat-name{color:var(--ig)}
+.p-tt{border-color:var(--tt)!important;background:var(--tt-bg)!important}.p-tt .plat-name{color:var(--tt)}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
+.chip{padding:7px 15px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:#4A5568;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
+.chip:hover{border-color:#aaa}
+.chip.on{font-weight:700}
+
+/* TOPIC */
+.topic-card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:22px;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.topic-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tc{padding:5px 12px;border-radius:20px;font-size:11px;border:1.5px solid var(--border);background:var(--bg);color:#4A5568;cursor:pointer;transition:all .15s;font-family:inherit}
+.tc:hover{border-color:#aaa}
+.tc.on{font-weight:600}
+#customTopic{width:100%;padding:11px 15px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;outline:none;font-family:inherit;color:var(--text);background:var(--bg);transition:border .2s}
+#customTopic:focus{border-color:var(--orange);background:#fff}
+
+/* GEN BTN */
+#genBtn{width:100%;padding:16px;border-radius:var(--radius);border:none;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;margin-bottom:26px;transition:all .2s;letter-spacing:-.2px}
+#genBtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(10,22,40,.3)}
+#genBtn:disabled{background:#CBD5E0;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ERROR */
+.errbox{background:#FFF5F5;border:1.5px solid #FED7D7;border-radius:10px;padding:13px 15px;color:#C53030;font-size:13px;margin-bottom:18px;display:none}
+
+/* RESULT WRAPPER */
+#resultWrap{display:none}
+
+/* TABS */
+.result-tabs{display:flex;gap:0;margin-bottom:0;border-radius:14px 14px 0 0;overflow:hidden;background:var(--navy)}
+.rtab{flex:1;padding:13px 8px;border:none;background:transparent;color:#5A7AA8;font-weight:600;font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s;text-align:center;letter-spacing:.3px}
+.rtab:hover{color:#fff;background:rgba(255,255,255,0.05)}
+.rtab.on{color:#fff;background:rgba(255,255,255,0.12);border-bottom:2px solid var(--orange)}
+
+/* RESULT CARD */
+.result-card{background:var(--card);border-radius:0 0 18px 18px;box-shadow:0 6px 28px rgba(0,0,0,0.1);overflow:hidden}
+.result-hdr{padding:16px 22px;display:flex;align-items:center;justify-content:space-between}
+.result-hdr span{color:#fff;font-weight:700;font-size:14px}
+.copy-btn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:7px 16px;border-radius:20px;cursor:pointer;font-weight:600;font-size:12px;font-family:inherit;transition:all .15s}
+.copy-btn:hover{background:rgba(255,255,255,.3)}
+.result-body{padding:22px}
+
+/* FIELDS */
+.rfield{margin-bottom:20px}
+.rfield-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.rfield-icon{font-size:13px}
+.rfield-val{background:var(--bg);border-radius:10px;padding:13px 15px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word;border:1px solid var(--border)}
+.rfield-val.mono{font-family:monospace;font-size:12px}
+
+/* HASHTAG PILLS */
+.hashtag-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.htag{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:600;background:var(--bg);border:1.5px solid var(--border);color:var(--muted)}
+
+/* FLIER CARD */
+.flier-card{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:14px;padding:22px;color:#fff;position:relative;overflow:hidden;margin-bottom:20px}
+.flier-card::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,107,53,.15)}
+.flier-card::after{content:'';position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,107,53,.1)}
+.flier-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--orange2);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.flier-title{font-size:18px;font-weight:900;line-height:1.3;margin-bottom:10px;letter-spacing:-.3px}
+.flier-sub{font-size:12px;color:#8AACCC;line-height:1.6;margin-bottom:14px}
+.flier-specs{display:flex;gap:8px;flex-wrap:wrap}
+.fspec{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 11px;font-size:11px;color:#AACCEE;font-weight:500}
+
+/* TIP */
+.tip-box{background:#FFF8F3;border:1.5px solid #FFD5B0;border-radius:11px;padding:13px 15px;margin-top:4px}
+.tip-box strong{font-size:11px;color:var(--orange);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.8px}
+.tip-box p{font-size:12px;color:#6B4226;line-height:1.6}
+
+/* SCORE METER */
+.score-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.score-item{flex:1;min-width:100px;background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border);text-align:center}
+.score-val{font-size:22px;font-weight:900;line-height:1}
+.score-lbl{font-size:10px;color:var(--muted);margin-top:4px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+
+/* STRATEGY */
+#strategy{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+#strategy h2{font-weight:700;font-size:14px;color:var(--navy);margin-bottom:14px}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.scard{background:var(--bg);border-radius:11px;padding:14px;border-top:3px solid #ddd}
+.scard h3{font-size:12px;font-weight:700;margin-bottom:7px}
+.scard p{font-size:11px;color:#4A5568;line-height:1.6}
+
+/* LOADING OVERLAY */
+.loading-wrap{text-align:center;padding:40px 20px;display:none}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-wrap p{color:var(--muted);font-size:14px;font-weight:500}
+
+@media(max-width:600px){
+  header{padding:14px}
+  .keybar{padding:10px 14px}
+  main{padding:18px 12px 50px}
+  .platforms{gap:7px}
+  .plat-btn{padding:10px 5px}
+  .plat-desc{display:none}
+  .sgrid{grid-template-columns:1fr}
+  .result-tabs .rtab{font-size:10px;padding:11px 4px}
+  .score-row{gap:8px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">B</div>
+  <div class="htxt">
+    <h1>Billbaze Social Planner</h1>
+    <p>AI-powered · Facebook · Instagram · TikTok</p>
+  </div>
+  <div class="badge">Pre-Launch</div>
+</header>
+
+<div class="keybar">
+  <label>🔑 API Key:</label>
+  <input type="password" id="apiKey" placeholder="sk-ant-api03-..."/>
+  <small>Saved in your browser. <a href="https://console.anthropic.com/settings/keys" target="_blank">Get key →</a></small>
+</div>
+
+<main>
+
+  <div class="sec-label">Choose Platform</div>
+  <div class="platforms">
+    <button class="plat-btn p-fb" data-p="facebook" onclick="selPlatform(this)">
+      <div class="plat-icon" style="background:#1877F2">f</div>
+      <div class="plat-name">Facebook</div>
+      <div class="plat-desc">Education + brand teasers</div>
+    </button>
+    <button class="plat-btn" data-p="instagram" onclick="selPlatform(this)">
+      <div class="plat-icon" style="background:linear-gradient(135deg,#F58529,#DD2A7B,#515BD4)">ig</div>
+      <div class="plat-name">Instagram</div>
+      <div class="plat-desc">Visuals + captions</div>
+    </button>
+    <button class="plat-btn" data-p="tiktok" onclick="selPlatform(this)">
+      <div class="plat-icon" style="background:#111">tt</div>
+      <div class="plat-name">TikTok</div>
+      <div class="plat-desc">Hook + breakdown</div>
+    </button>
+  </div>
+
+  <div class="sec-label">Post Type</div>
+  <div class="chips" id="typeChips"></div>
+
+  <div class="topic-card">
+    <div class="sec-label" style="margin-bottom:10px">Topic</div>
+    <div class="topic-chips" id="topicChips"></div>
+    <input type="text" id="customTopic" placeholder="Or type your own topic..." oninput="clearTC()"/>
+  </div>
+
+  <button id="genBtn" onclick="generate()">✨ Generate Facebook Content Package</button>
+
+  <div class="errbox" id="errBox"></div>
+
+  <div class="loading-wrap" id="loadWrap">
+    <div class="spinner"></div>
+    <p>Crafting your full content package...</p>
+  </div>
+
+  <div id="resultWrap">
+    <div class="result-tabs" id="resultTabs"></div>
+    <div class="result-card">
+      <div class="result-hdr" id="resultHdr">
+        <span id="resultTitle"></span>
+        <button class="copy-btn" onclick="copySection()">Copy Section</button>
+      </div>
+      <div class="result-body" id="resultBody"></div>
+    </div>
+  </div>
+
+  <div id="strategy">
+    <h2>📋 Pre-Launch Content Strategy</h2>
+    <div class="sgrid">
+      <div class="scard" style="border-top-color:#1877F2">
+        <h3 style="color:#1877F2">Facebook</h3>
+        <p>3×/week — Mix finance education with Billbaze teasers. Education builds trust; teasers build hype. Always end with a question for comments.</p>
+      </div>
+      <div class="scard" style="border-top-color:#C13584">
+        <h3 style="color:#C13584">Instagram</h3>
+        <p>5×/week — Consistent brand visuals, bold captions. Use Reels for reach, carousels for saves, Stories for daily touchpoints.</p>
+      </div>
+      <div class="scard" style="border-top-color:#111">
+        <h3 style="color:#111">TikTok</h3>
+        <p>Daily — Finance content is booming on TikTok. Hook hard in the first 2 seconds. Breakdowns drive saves and shares.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const TYPES = {
+  facebook:  ["Finance Education","Billbaze Teaser","Money Tip","Industry Insight","Community Post"],
+  instagram: ["Brand Teaser","Feature Highlight","Payment Tip","Hype Post","Carousel Concept"],
+  tiktok:    ["Hook + Breakdown","Did You Know?","Problem → Solution","Viral Finance Fact","Behind the Brand"]
+};
+const TOPICS = [
+  "School fees payment","Government payment portal","Hidden bank charges","Why Nigerians overpay on transfers",
+  "Financial literacy for young people","The future of digital payments","Mobile money in Africa",
+  "How to cut transaction costs","Why cash is dying","Billbaze pre-launch waitlist",
+  "Paying JAMB / WAEC fees online","Why fintech is changing Africa","Budgeting tips for students"
+];
+const PCOLORS = {facebook:"#1877F2", instagram:"#C13584", tiktok:"#111111"};
+const PBGS    = {facebook:"#1877F2", instagram:"linear-gradient(135deg,#F58529,#DD2A7B)", tiktok:"#111111"};
+
+let plat="facebook", ptype=TYPES.facebook[0], topic="";
+let allResult=null, activeTab=0;
+
+/* ── PLATFORM ── */
+function selPlatform(btn){
+  document.querySelectorAll(".plat-btn").forEach(b=>{b.className="plat-btn"});
+  const p=btn.dataset.p;
+  btn.classList.add("p-"+(p==="facebook"?"fb":p==="instagram"?"ig":"tt"));
+  plat=p; ptype=TYPES[p][0]; topic="";
+  renderTypeChips(); renderTopicChips();
+  document.getElementById("customTopic").value="";
+  document.getElementById("genBtn").textContent=`✨ Generate ${cap(p)} Content Package`;
+  hideResult();
+}
+
+/* ── TYPE CHIPS ── */
+function renderTypeChips(){
+  const c=document.getElementById("typeChips"); c.innerHTML="";
+  const col=PCOLORS[plat];
+  TYPES[plat].forEach(t=>{
+    const b=document.createElement("button");
+    b.className="chip"+(t===ptype?" on":"");
+    b.textContent=t;
+    if(t===ptype){b.style.borderColor=col;b.style.color=col;b.style.background=plat==="facebook"?"#EBF3FF":plat==="instagram"?"#FDF0F7":"#EFEFEF"}
+    b.onclick=()=>{ptype=t;hideResult();renderTypeChips()};
+    c.appendChild(b);
+  });
+}
+
+/* ── TOPIC CHIPS ── */
+function renderTopicChips(){
+  const c=document.getElementById("topicChips"); c.innerHTML="";
+  const col=PCOLORS[plat];
+  TOPICS.forEach(t=>{
+    const b=document.createElement("button");
+    b.className="tc"+(t===topic?" on":"");
+    b.textContent=t;
+    if(t===topic){b.style.borderColor=col;b.style.color=col;b.style.background="#fff"}
+    b.onclick=()=>{topic=topic===t?"":t;document.getElementById("customTopic").value="";renderTopicChips()};
+    c.appendChild(b);
+  });
+}
+function clearTC(){topic="";renderTopicChips()}
+
+function hideResult(){
+  document.getElementById("resultWrap").style.display="none";
+  document.getElementById("strategy").style.display="block";
+}
+
+/* ── PROMPTS ── */
+function sysPrompt(){
+  return `You are a senior social media strategist and SEO copywriter for Billbaze — a Nigerian fintech startup that simplifies payments (school fees, government fees, utilities, etc). Billbaze is NOT yet live; all content builds anticipation and a waiting audience.
+
+Brand: Bold, modern, friendly. Navy blue (#0A1628) + vibrant orange (#FF6B35). Speaks to young Nigerians and parents.
+Voice: Confident, relatable, educational. Never corporate-stiff.
+
+IMPORTANT: Return ONLY raw valid JSON. No markdown fences, no explanation, no extra text outside the JSON.`;
+}
+
+function buildPrompt(){
+  const t=document.getElementById("customTopic").value.trim()||topic||"";
+
+  if(plat==="facebook"){
+    if(ptype==="Finance Education") return `
+Create a complete Facebook FINANCE EDUCATION content package about: "${t||"a surprising money fact most Nigerians don't know"}".
+This post is NOT about Billbaze — it's pure educational value that builds trust and following.
+
+Return JSON with exactly these keys:
+{
+  "seo_title": "SEO-optimized post title (60-70 chars, includes a keyword)",
+  "seo_meta": "Meta description for this post if shared as a link (150-160 chars)",
+  "headline": "Attention-grabbing Facebook post headline",
+  "body": "Full post body — 3-4 paragraphs. Educational, relatable, conversational. End with a question to drive comments.",
+  "key_points": ["key point 1","key point 2","key point 3"],
+  "call_to_action": "Strong CTA — e.g. follow for more, tag a friend, save this",
+  "hashtags": ["hashtag1","hashtag2",...15 total, mix of broad and niche Nigerian finance tags],
+  "flier_headline": "Big bold headline for a graphic/flier (max 8 words)",
+  "flier_subtext": "Supporting line for the flier (max 15 words)",
+  "flier_design_brief": "Detailed design brief: background, colors, fonts, layout, images/icons to use, mood",
+  "flier_size_guide": "Recommended sizes e.g. 1080x1080 for feed, 1080x1920 for story",
+  "posting_time": "Best time to post this on Facebook and why",
+  "engagement_tip": "One specific tip to maximize engagement on this post"
+}`;
+
+    return `
+Create a complete Facebook ${ptype} content package for Billbaze about: "${t||"making payments easier in Nigeria"}".
+
+Return JSON:
+{
+  "seo_title": "SEO-optimized post title (60-70 chars)",
+  "seo_meta": "Meta description (150-160 chars)",
+  "headline": "Attention-grabbing headline",
+  "body": "Full post body — 2-3 paragraphs, hype and anticipation energy, speaks to pain points Billbaze solves",
+  "key_points": ["benefit 1","benefit 2","benefit 3"],
+  "call_to_action": "CTA — e.g. join waitlist, follow for updates, tag someone who needs this",
+  "hashtags": ["hashtag1",...15 total],
+  "flier_headline": "Bold flier headline (max 8 words)",
+  "flier_subtext": "Flier supporting line (max 15 words)",
+  "flier_design_brief": "Detailed design brief: colors, layout, imagery, mood, brand elements to include",
+  "flier_size_guide": "Recommended sizes",
+  "posting_time": "Best time to post on Facebook",
+  "engagement_tip": "One tip to maximize engagement"
+}`;
+  }
+
+  if(plat==="instagram"){
+    return `
+Create a complete Instagram ${ptype} content package for Billbaze about: "${t||"the future of payments in Nigeria"}".
+
+Return JSON:
+{
+  "seo_title": "SEO title for this content (used if linked to website/bio link)",
+  "caption_hook": "First 1-2 lines of caption — must stop the scroll, emoji-rich, bold statement or question",
+  "caption_body": "Rest of the caption — expands on the hook, 3-5 sentences, conversational",
+  "caption_cta": "End of caption CTA — comment, DM, save, follow, link in bio",
+  "alt_text": "Descriptive alt text for the image (SEO + accessibility, 125 chars)",
+  "hashtags": ["hashtag1",...25 hashtags — mix of mega, medium and niche Nigerian fintech tags],
+  "story_text": "Short punchy text to pair with a matching Instagram Story teaser (max 3 lines)",
+  "flier_headline": "Bold flier headline (max 7 words, all caps feel)",
+  "flier_subtext": "Supporting flier line (max 12 words)",
+  "flier_design_brief": "Detailed design brief: layout, colors, fonts, imagery, Instagram aesthetic, mood",
+  "flier_size_guide": "1080x1080 feed + 1080x1920 story specs",
+  "carousel_slides": ["Slide 1 text","Slide 2 text","Slide 3 text","Slide 4 text","Slide 5 CTA slide text"],
+  "posting_time": "Best time to post on Instagram",
+  "engagement_tip": "One specific engagement tip"
+}`;
+  }
+
+  if(plat==="tiktok"){
+    return `
+Create a complete TikTok ${ptype} content package for Billbaze about: "${t||"a shocking payment fact in Nigeria"}".
+
+Return JSON:
+{
+  "seo_title": "SEO title / video title for TikTok search (60 chars max)",
+  "hook": "First 1-2 lines — MUST stop scrolling instantly. Bold, shocking, or curiosity-driven. Max 15 words.",
+  "caption": "Full TikTok caption — hook line, then 2-3 sentence breakdown below 'more', end with CTA",
+  "breakdown": "The full educational/entertaining breakdown — 4-6 short punchy paragraphs. This is what you read out or display on screen",
+  "on_screen_text": ["Text overlay 1 (shown on video)","Text overlay 2","Text overlay 3","Text overlay 4"],
+  "flier_headline": "Bold image/thumbnail headline (max 8 words, scroll-stopping)",
+  "flier_subtext": "Supporting thumbnail line (max 10 words)",
+  "flier_design_brief": "Thumbnail design brief — bold, high contrast, TikTok thumbnail style. Colors, layout, face or no-face, text placement",
+  "flier_size_guide": "1080x1920 vertical for TikTok",
+  "hashtags": ["hashtag1",...20 hashtags — TikTok SEO optimized, mix of trending finance and Nigerian tags],
+  "sound_suggestion": "Suggested audio mood or trending sound type to use",
+  "posting_time": "Best time to post on TikTok",
+  "engagement_tip": "One specific TikTok growth tip for this post"
+}`;
+  }
+}
+
+/* ── GENERATE ── */
+async function generate(){
+  const key=document.getElementById("apiKey").value.trim();
+  if(!key){showErr("Please enter your Anthropic API key at the top.");return}
+
+  const btn=document.getElementById("genBtn");
+  btn.disabled=true; btn.textContent="✨ Building your content package...";
+  document.getElementById("errBox").style.display="none";
+  document.getElementById("loadWrap").style.display="block";
+  hideResult();
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-api-key":key,
+        "anthropic-version":"2023-06-01",
+        "anthropic-dangerous-direct-browser-access":"true"
+      },
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:2000,
+        system:sysPrompt(),
+        messages:[{role:"user",content:buildPrompt()}]
+      })
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||"API error "+res.status)}
+    const data=await res.json();
+    const txt=data.content?.map(b=>b.text||"").join("")||"";
+    const clean=txt.replace(/```json|```/g,"").trim();
+    allResult=JSON.parse(clean);
+    activeTab=0;
+    renderResult();
+  }catch(e){
+    showErr("Error: "+e.message);
+  }finally{
+    btn.disabled=false;
+    btn.textContent=`✨ Generate ${cap(plat)} Content Package`;
+    document.getElementById("loadWrap").style.display="none";
+  }
+}
+
+/* ── RENDER ── */
+const SECTIONS={
+  facebook:{
+    "Finance Education":[
+      {id:"post",label:"📝 Post Content",icon:"📝",keys:["seo_title","seo_meta","headline","body","key_points","call_to_action"]},
+      {id:"hashtags",label:"# Hashtags",icon:"#",keys:["hashtags"]},
+      {id:"flier",label:"🎨 Flier Brief",icon:"🎨",keys:["flier_headline","flier_subtext","flier_design_brief","flier_size_guide"]},
+      {id:"strategy",label:"📊 Strategy",icon:"📊",keys:["posting_time","engagement_tip"]}
+    ],
+    default:[
+      {id:"post",label:"📝 Post Content",icon:"📝",keys:["seo_title","seo_meta","headline","body","key_points","call_to_action"]},
+      {id:"hashtags",label:"# Hashtags",icon:"#",keys:["hashtags"]},
+      {id:"flier",label:"🎨 Flier Brief",icon:"🎨",keys:["flier_headline","flier_subtext","flier_design_brief","flier_size_guide"]},
+      {id:"strategy",label:"📊 Strategy",icon:"📊",keys:["posting_time","engagement_tip"]}
+    ]
+  },
+  instagram:{
+    default:[
+      {id:"caption",label:"✍️ Caption",icon:"✍️",keys:["caption_hook","caption_body","caption_cta","story_text","alt_text"]},
+      {id:"hashtags",label:"# Hashtags",icon:"#",keys:["hashtags"]},
+      {id:"carousel",label:"🎠 Carousel",icon:"🎠",keys:["carousel_slides"]},
+      {id:"flier",label:"🎨 Flier Brief",icon:"🎨",keys:["flier_headline","flier_subtext","flier_design_brief","flier_size_guide"]},
+      {id:"strategy",label:"📊 Strategy",icon:"📊",keys:["seo_title","posting_time","engagement_tip"]}
+    ]
+  },
+  tiktok:{
+    default:[
+      {id:"script",label:"🎬 Script",icon:"🎬",keys:["hook","caption","breakdown","on_screen_text"]},
+      {id:"hashtags",label:"# Hashtags",icon:"#",keys:["hashtags"]},
+      {id:"flier",label:"🖼️ Thumbnail",icon:"🖼️",keys:["flier_headline","flier_subtext","flier_design_brief","flier_size_guide"]},
+      {id:"strategy",label:"📊 Strategy",icon:"📊",keys:["seo_title","sound_suggestion","posting_time","engagement_tip"]}
+    ]
+  }
+};
+
+function getSections(){
+  const ps=SECTIONS[plat];
+  return ps[ptype]||ps["default"];
+}
+
+function renderResult(){
+  const col=PCOLORS[plat];
+  const sections=getSections();
+
+  // TABS
+  const tabsEl=document.getElementById("resultTabs");
+  tabsEl.innerHTML="";
+  sections.forEach((s,i)=>{
+    const b=document.createElement("button");
+    b.className="rtab"+(i===activeTab?" on":"");
+    b.textContent=s.label;
+    b.onclick=()=>{activeTab=i;renderResult()};
+    tabsEl.appendChild(b);
+  });
+
+  // HEADER
+  document.getElementById("resultHdr").style.background=col;
+  document.getElementById("resultTitle").textContent=`${cap(plat)} · ${ptype} · ${sections[activeTab].label}`;
+
+  // BODY
+  const body=document.getElementById("resultBody");
+  body.innerHTML="";
+  const sec=sections[activeTab];
+
+  sec.keys.forEach(key=>{
+    if(!(key in allResult))return;
+    const val=allResult[key];
+    const div=document.createElement("div");
+    div.className="rfield";
+
+    const lbl=document.createElement("div");
+    lbl.className="rfield-label";
+    lbl.style.color=col;
+    lbl.textContent=key.replace(/_/g," ");
+    div.appendChild(lbl);
+
+    if(key==="hashtags"&&Array.isArray(val)){
+      const wrap=document.createElement("div");
+      wrap.className="hashtag-wrap";
+      val.forEach(h=>{
+        const pill=document.createElement("span");
+        pill.className="htag";
+        pill.textContent=h.startsWith("#")?h:"#"+h;
+        wrap.appendChild(pill);
+      });
+      div.appendChild(wrap);
+    } else if(key==="carousel_slides"&&Array.isArray(val)){
+      val.forEach((slide,i)=>{
+        const sd=document.createElement("div");
+        sd.className="rfield-val";
+        sd.style.marginBottom="8px";
+        sd.style.borderLeft=`3px solid ${col}`;
+        sd.innerHTML=`<strong style="color:${col};font-size:11px">SLIDE ${i+1}</strong>\n${slide}`;
+        div.appendChild(sd);
+      });
+    } else if(key==="on_screen_text"&&Array.isArray(val)){
+      val.forEach((t,i)=>{
+        const sd=document.createElement("div");
+        sd.className="rfield-val";
+        sd.style.marginBottom="8px";
+        sd.style.background="#111";
+        sd.style.color="#fff";
+        sd.innerHTML=`<strong style="color:#FF6B35;font-size:11px">OVERLAY ${i+1}</strong>\n${t}`;
+        div.appendChild(sd);
+      });
+    } else if(key==="key_points"&&Array.isArray(val)){
+      const vd=document.createElement("div");
+      vd.className="rfield-val";
+      vd.textContent=val.map((p,i)=>`${i+1}. ${p}`).join("\n");
+      div.appendChild(vd);
+    } else if(key==="flier_design_brief"){
+      // Special flier card
+      const fc=document.createElement("div");
+      fc.className="flier-card";
+      fc.innerHTML=`
+        <div class="flier-label">🎨 Flier Design Brief</div>
+        <div class="flier-title">${allResult.flier_headline||""}</div>
+        <div class="flier-sub">${allResult.flier_subtext||""}</div>
+        <div style="color:#AACCEE;font-size:13px;line-height:1.7;margin-bottom:14px">${val}</div>
+        <div class="flier-specs">
+          ${(allResult.flier_size_guide||"").split(",").map(s=>`<span class="fspec">📐 ${s.trim()}</span>`).join("")}
+        </div>`;
+      div.appendChild(fc);
+    } else if(key==="flier_headline"||key==="flier_subtext"||key==="flier_size_guide"){
+      return; // rendered inside flier card
+    } else {
+      const vd=document.createElement("div");
+      vd.className="rfield-val";
+      vd.textContent=Array.isArray(val)?val.join("\n"):val;
+      div.appendChild(vd);
+    }
+
+    body.appendChild(div);
+  });
+
+  // Tip box
+  const tips={
+    facebook:"Facebook rewards posts that get early comments. Ask a friend to comment within the first 10 minutes of posting.",
+    instagram:"Post your carousel first — then share the first slide to your Story with a 'Swipe →' sticker to drive traffic.",
+    tiktok:"Upload your video between 6–10PM on weekdays. Reply to every comment in the first hour — it signals the algorithm."
+  };
+  const tip=document.createElement("div");
+  tip.className="tip-box";
+  tip.innerHTML=`<strong>💡 Pro Tip</strong><p>${tips[plat]}</p>`;
+  body.appendChild(tip);
+
+  document.getElementById("resultWrap").style.display="block";
+  document.getElementById("strategy").style.display="none";
+  document.getElementById("resultWrap").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ── COPY ── */
+function copySection(){
+  if(!allResult)return;
+  const sec=getSections()[activeTab];
+  const lines=[];
+  sec.keys.forEach(k=>{
+    if(!(k in allResult))return;
+    const v=allResult[k];
+    lines.push(k.replace(/_/g," ").toUpperCase()+":");
+    if(Array.isArray(v)) lines.push(v.map(x=>x.startsWith&&x.startsWith("#")?x:"#"+x).join(" "));
+    else lines.push(v);
+    lines.push("");
+  });
+  navigator.clipboard.writeText(lines.join("\n")).then(()=>{
+    const b=document.querySelector(".copy-btn");
+    b.textContent="✓ Copied!";
+    setTimeout(()=>b.textContent="Copy Section",2000);
+  });
+}
+
+function showErr(m){
+  const b=document.getElementById("errBox");
+  b.textContent=m; b.style.display="block";
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+
+// Init
+renderTypeChips(); renderTopicChips();
+const saved=localStorage.getItem("bb_key");
+if(saved) document.getElementById("apiKey").value=saved;
+document.getElementById("apiKey").addEventListener("change",()=>{
+  localStorage.setItem("bb_key",document.getElementById("apiKey").value);
+});
+</script>
+</body>
+</html>
